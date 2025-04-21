@@ -1,6 +1,7 @@
 //package com.example.hotel.BookingService;
 //
 //import com.example.hotel.BookingService.Clients.AvailabilityClient;
+//import com.example.hotel.BookingService.rabbitmq.BookingProducer;
 //import com.example.hotel.BookingService.rabbitmq.RabbitMQConfig;
 //import com.fasterxml.jackson.databind.ObjectMapper;
 //import org.junit.jupiter.api.BeforeEach;
@@ -8,15 +9,16 @@
 //import org.springframework.amqp.core.Queue;
 //import org.springframework.amqp.rabbit.core.RabbitTemplate;
 //import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.beans.factory.annotation.Value;
 //import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 //import org.springframework.boot.test.context.SpringBootTest;
 //import org.springframework.http.MediaType;
 //import org.springframework.test.context.bean.override.mockito.MockitoBean;
 //import org.springframework.test.web.servlet.MockMvc;
 //
+//
 //import static org.assertj.core.api.Assertions.*;
 //import static org.mockito.BDDMockito.given;
+//import static org.mockito.Mockito.verify;
 //import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 //import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 //
@@ -25,11 +27,16 @@
 //public class BookingServiceApplicationTests {
 //
 //    @Autowired MockMvc mockMvc;
-//    @Autowired RabbitTemplate rabbitTemplate;
+//    @MockitoBean
+//    RabbitTemplate rabbitTemplate;
 //    @Autowired Queue notificationQueue;
 //    @Autowired ObjectMapper objectMapper;
+//
 //    @MockitoBean
 //    private AvailabilityClient availabilityClient;
+//
+//    @Autowired
+//    private BookingProducer bookingProducer;
 //
 //    @BeforeEach
 //    void purgeQueue() {
@@ -52,13 +59,12 @@
 //                        .getResponse()
 //                        .getContentAsString();
 //
-//
-//        // assert: the very same bookingId arrives on the queue
-//        String msg = (String) rabbitTemplate
-//                .receiveAndConvert(RabbitMQConfig.BOOKING_QUEUE, 3_000);
-//        assertThat(msg)
-//                .as("bookingId must be published to the queue")
-//                .isEqualTo(bookingId);
+//        // assert: the bookingId was sent to RabbitMQ
+//        verify(rabbitTemplate).convertAndSend(
+//                RabbitMQConfig.EXCHANGE,
+//                RabbitMQConfig.BOOKING_ROUTING,
+//                bookingId
+//        );
 //    }
 //
 //    @Test

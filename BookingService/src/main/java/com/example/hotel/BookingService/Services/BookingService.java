@@ -25,5 +25,24 @@ public class BookingService {
         this.availability = availability;
         this.producer     = producer;
     }
+    public String createBooking(String roomType, int nights) {
+        // Check availability
+        boolean isAvailable = availability.check(roomType, nights);
+
+        if (!isAvailable) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "No availability for room type: " + roomType
+            );
+        }
+
+        // Generate booking ID
+        String bookingId = UUID.randomUUID().toString();
+
+        // Notify notification service
+        producer.sendBooking(bookingId);
+
+        return bookingId;
+    }
 }
 

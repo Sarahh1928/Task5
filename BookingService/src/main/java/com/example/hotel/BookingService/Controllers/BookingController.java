@@ -14,11 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class BookingController {
     private final BookingService service;
 
-    @Value("${Name}")
-    private String name;
-
-    @Value("${ID}")
-    private String id;
     @Autowired
     public BookingController(BookingService service) {
         this.service = service;
@@ -26,7 +21,7 @@ public class BookingController {
 
     @PostMapping
     public String book(@RequestParam String roomType, @RequestParam int nights) {
-        return service.createBooking(roomType, nights)+"_"+name+"_"+id;
+        return service.createBooking(roomType, nights);
     }
 }
 

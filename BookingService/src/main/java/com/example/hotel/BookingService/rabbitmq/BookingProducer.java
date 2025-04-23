@@ -21,7 +21,7 @@ public class BookingProducer {
     private String id;
 
     public void sendBooking(String bookingId) {
-        String message = bookingId + "_" + name + "_" + id;
+        String message = bookingId;
         rabbitTemplate.convertAndSend(
                 rabbitMQConfig.EXCHANGE,
                 rabbitMQConfig.BOOKING_ROUTING,

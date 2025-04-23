@@ -26,7 +26,6 @@ public class BookingService {
         this.producer     = producer;
     }
     public String createBooking(String roomType, int nights) {
-        // Check availability
         boolean isAvailable = availability.check(roomType, nights);
 
         if (!isAvailable) {
@@ -36,10 +35,8 @@ public class BookingService {
             );
         }
 
-        // Generate booking ID
-        String bookingId = UUID.randomUUID().toString();
+        String bookingId = UUID.randomUUID().toString()+" "+name+"_"+id;
 
-        // Notify notification service
         producer.sendBooking(bookingId);
 
         return bookingId;
